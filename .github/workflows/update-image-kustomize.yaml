@@ -1,0 +1,55 @@
+name: Update Docker image on Kustomize file
+
+on:
+  workflow_call:
+    inputs:
+      imageName:
+        required: true
+        type: string
+      imageVersion:
+        required: true
+        type: string
+      kustomizePath:
+        required: false
+        type: string  
+        default: ""
+      gitEmail:
+        required: false
+        type: string  
+        default: "action@github.com"
+      gitUsername:
+        required: false
+        type: string
+        default: "Deploy Action"
+      gitCommitMessage:
+        required: false
+        type: string  
+        default: "Change image tag"
+
+jobs:
+  update-kustomize:
+    name: Update Kustomize
+    runs-on: self-hosted
+    steps:
+      - id: setup-kustomize
+        name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v1
+        with:
+          kustomize-version: v3.6.1
+
+      - id: update-kustomize
+        name: Update Kustomize
+        run: |
+          cd ${{ github.workspace }}/${{ inputs.kustomizePath }}
+          kustomize edit set image public.nexus.cams7.ml/${{ inputs.imageName }}=public.nexus.cams7.ml/${{ inputs.imageName }}:${{ inputs.imageVersion }}
+
+      - id: commit
+        name: Commit
+        run: |
+          git config --local user.email "${{ inputs.gitEmail }}"
+          git config --local user.name "${{ inputs.gitUsername }}"
+          git commit -am "Change image ${{ inputs.gitCommitMessage }}"
+
+      - id: push
+        name : Push
+        uses: ad-m/github-push-action@master
