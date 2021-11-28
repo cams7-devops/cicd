@@ -35,42 +35,49 @@ runs:
         distribution: 'adopt'
         cache: maven
         
-    - id: cache-sonarqube-packages
-      name: Cache SonarQube packages
-      uses: actions/cache@v2
-      with:
-        path: ~/.sonar/cache
-        key: ${{ runner.os }}-sonar
-        restore-keys: ${{ runner.os }}-sonar
+#    - id: cache-sonarqube-packages
+#      name: Cache SonarQube packages
+#      uses: actions/cache@v2
+#      with:
+#        path: ~/.sonar/cache
+#        key: ${{ runner.os }}-sonar
+#        restore-keys: ${{ runner.os }}-sonar
 
-    - id: tests
-      name: Tests
-      run: mvn -s settings.xml -B test --file pom.xml
+#    - id: tests
+#      name: Tests
+#      run: mvn -s settings.xml -B test --file pom.xml
 
-    - id: update-version
-      name: Update version
-      run: mvn -s settings.xml -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}${{ inputs['snapshot-suffix'] }} versions:commit
+#    - id: update-version
+#      name: Update version
+#      run: mvn -s settings.xml -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}${{ inputs['snapshot-suffix'] }} versions:commit
         
-    - id: verify-and-analyze
-      name: Verify and analyze
-      run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -DskipTests --file pom.xml
+#    - id: verify-and-analyze
+#      name: Verify and analyze
+#      env:
+#        GITHUB_TOKEN: ${{ inputs['github-token'] }}
+#        SONAR_TOKEN: ${{ inputs['sonar-token'] }}
+#        SONAR_HOST_URL: ${{ inputs['sonar-host-url'] }}
+#      run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -DskipTests --file pom.xml
 
-    - id: build-and-deploy
-      name: Build and deploy
-      run: mvn -s settings.xml -B clean package deploy -DskipTests --file pom.xml
+#    - id: build-and-deploy
+#      name: Build and deploy
+#      run: mvn -s settings.xml -B clean package deploy -DskipTests --file pom.xml
 
-    - id: commit
-      name: Commit
-      run: |
-        git config --local user.email "${{ inputs['git-email'] }}"
-        git config --local user.name "${{ inputs['git-username'] }}"
-        git commit -am "${{ inputs['git-commit-message'] }}"
+#    - id: commit
+#      name: Commit
+#      run: |
+#        git config --local user.email "${{ inputs['git-email'] }}"
+#        git config --local user.name "${{ inputs['git-username'] }}"
+#        git commit -am "${{ inputs['git-commit-message'] }}"
 
-    - id: push
-      name : Push
-      uses: ad-m/github-push-action@master
+#    - id: push
+#      name : Push
+#      uses: ad-m/github-push-action@master
 
     - id: finish-build
       name: Finish build
       shell: bash
-      run: echo "::set-output name=status::OK"
+      run: |
+        echo "NEXUS3_USERNAME: $NEXUS3_USERNAME"
+        echo "R2DBC_DATABASE_URL: $R2DBC_DATABASE_URL"
+        echo "::set-output name=status::OK"
