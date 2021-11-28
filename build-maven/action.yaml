@@ -45,6 +45,13 @@ runs:
 
     - id: tests
       name: Tests
+      env:
+        NEXUS3_USERNAME: admin
+        NEXUS3_PASSWORD: abc12345
+        R2DBC_DATABASE_URL: postgres-svc
+        R2DBC_DATABASE_USERNAME: spring_webflux_essentials
+        R2DBC_DATABASE_PASSWORD: abc12345
+        LOGGING: DEBUG 
       run: mvn -s settings.xml -B test --file pom.xml
 
 #    - id: update-version
