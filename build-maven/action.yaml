@@ -23,53 +23,53 @@ inputs:
     required: false
     type: string  
     default: "Update application version"
-  logging: 
-    description: LOGGING
-    required: false
-    type: string
-    default: "INFO"
-  github-token: 
-    description: GITHUB_TOKEN
-    required: true
-    type: string
-  sonar-token: 
-    description: SONAR_TOKEN
-    required: true
-    type: string
-  sonar-host-url: 
-    description: SONAR_HOST_URL
-    required: true
-    type: string
-  nexus3-username: 
-    description: NEXUS3_USERNAME
-    required: true
-    type: string
-  nexus3-password: 
-    description: NEXUS3_PASSWORD
-    required: true
-    type: string
-  r2dbc-database-url:
-    description: R2DBC_DATABASE_URL
-    type: string
-  r2dbc-database-username:
-    description: R2DBC_DATABASE_USERNAME
-    type: string
-  r2dbc-database-password:
-    description: R2DBC_DATABASE_USERNAME
-    type: string
+#  logging: 
+#    description: LOGGING
+#    required: false
+#    type: string
+#    default: "INFO"
+#  github-token: 
+#    description: GITHUB_TOKEN
+#    required: true
+#    type: string
+#  sonar-token: 
+#    description: SONAR_TOKEN
+#    required: true
+#    type: string
+#  sonar-host-url: 
+#    description: SONAR_HOST_URL
+#    required: true
+#    type: string
+#  nexus3-username: 
+#    description: NEXUS3_USERNAME
+#    required: true
+#    type: string
+#  nexus3-password: 
+#    description: NEXUS3_PASSWORD
+#    required: true
+#    type: string
+#  r2dbc-database-url:
+#    description: R2DBC_DATABASE_URL
+#    type: string
+#  r2dbc-database-username:
+#    description: R2DBC_DATABASE_USERNAME
+#    type: string
+#  r2dbc-database-password:
+#    description: R2DBC_DATABASE_USERNAME
+#    type: string
 outputs:
   status:
     description: Status
     value: ${{ steps['finish-build'].outputs.status }}
 runs:
   using: composite
-  env:
-    NEXUS3_USERNAME: ${{ inputs['nexus3-username'] }}
-    NEXUS3_PASSWORD: ${{ inputs['nexus3-password'] }}
-    R2DBC_DATABASE_URL: ${{ inputs['r2dbc-database-url'] }}
-    R2DBC_DATABASE_USERNAME: ${{ inputs['r2dbc-database-username'] }}
-    R2DBC_DATABASE_PASSWORD: ${{ inputs['r2dbc-database-password'] }}
-    LOGGING: ${{ inputs['logging'] }}  
+#  env:
+#    NEXUS3_USERNAME: ${{ inputs['nexus3-username'] }}
+#    NEXUS3_PASSWORD: ${{ inputs['nexus3-password'] }}
+#    R2DBC_DATABASE_URL: ${{ inputs['r2dbc-database-url'] }}
+#    R2DBC_DATABASE_USERNAME: ${{ inputs['r2dbc-database-username'] }}
+#    R2DBC_DATABASE_PASSWORD: ${{ inputs['r2dbc-database-password'] }}
+#    LOGGING: ${{ inputs['logging'] }}  
 
   steps:
     - id: set-up-jdk11 
@@ -99,9 +99,9 @@ runs:
     - id: verify-and-analyze
       name: Verify and analyze
       env:
-        GITHUB_TOKEN: ${{ inputs['github-token'] }}
-        SONAR_TOKEN: ${{ inputs['sonar-token'] }}
-        SONAR_HOST_URL: ${{ inputs['sonar-host-url'] }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}
       run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -DskipTests --file pom.xml
 
     - id: build-and-deploy
