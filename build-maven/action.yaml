@@ -60,20 +60,7 @@ runs:
     LOGGING: ${{ inputs['logging'] }}  
 
   steps:
-    - id: setup-up-go
-      name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: ${{ inputs['go-version'] }}
-
-    - id: build-go
-      name: Build Go
-      shell: bash
-      run: |
-        CGO_ENABLED=0 go build -o ${{ inputs['built-file'] }} ${{ inputs['go-file'] }}
-        echo "::set-output name=status::built-file"
-
-        - id: set-up-jdk11 
+    - id: set-up-jdk11 
       name: Set up JDK 11
       uses: actions/setup-java@v2
       with:
