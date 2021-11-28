@@ -7,23 +7,23 @@ inputs:
     description: SNAPSHOT suffix
     required: false
     default: "-SNAPSHOT"
-#  git-email:
-#    description: Git email
-#    required: false
-#    default: "action@github.com"
-#  git-username:
-#    description: Git username
-#    required: false
-#    default: "Deploy Action"
-#  git-commit-message:
-#    description: Git commit message
-#    required: false
-#    default: "Update application version"
-#  logging: 
-#    description: LOGGING
-#    required: false
-#    type: string
-#    default: "INFO"
+  git-email:
+    description: Git email
+    required: false
+    default: "action@github.com"
+  git-username:
+    description: Git username
+    required: false
+    default: "Deploy Action"
+  git-commit-message:
+    description: Git commit message
+    required: false
+    default: "Update application version"
+  logging: 
+    description: LOGGING
+    required: false
+    type: string
+    default: "INFO"
 #  github-token: 
 #    description: GITHUB_TOKEN
 #    required: true
@@ -115,4 +115,7 @@ runs:
     - id: finish-build
       name: Finish build
       shell: bash
-      run: echo "::set-output name=status::OK"
+      run: |
+        echo "NEXUS3_USERNAME: $NEXUS3_USERNAME"
+        echo "R2DBC_DATABASE_URL: $R2DBC_DATABASE_URL"
+        echo "::set-output name=status::OK"
