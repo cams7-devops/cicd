@@ -45,18 +45,13 @@ runs:
 
     - id: tests
       name: Tests
-      env:
-        NEXUS3_USERNAME: admin
-        NEXUS3_PASSWORD: abc12345
-        R2DBC_DATABASE_URL: postgres-svc
-        R2DBC_DATABASE_USERNAME: spring_webflux_essentials
-        R2DBC_DATABASE_PASSWORD: abc12345
-        LOGGING: DEBUG 
+      shell: bash
       run: mvn -s settings.xml -B test --file pom.xml
 
-#    - id: update-version
-#      name: Update version
-#      run: mvn -s settings.xml -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}${{ inputs['snapshot-suffix'] }} versions:commit
+    - id: update-version
+      name: Update version
+      shell: bash
+      run: mvn -s settings.xml -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}${{ inputs['snapshot-suffix'] }} versions:commit
         
 #    - id: verify-and-analyze
 #      name: Verify and analyze
