@@ -35,13 +35,13 @@ runs:
         distribution: 'adopt'
         cache: maven
         
-#    - id: cache-sonarqube-packages
-#      name: Cache SonarQube packages
-#      uses: actions/cache@v2
-#      with:
-#        path: ~/.sonar/cache
-#        key: ${{ runner.os }}-sonar
-#        restore-keys: ${{ runner.os }}-sonar
+    - id: cache-sonarqube-packages
+      name: Cache SonarQube packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
 
 #    - id: tests
 #      name: Tests
@@ -78,6 +78,8 @@ runs:
       name: Finish build
       shell: bash
       run: |
-        echo "NEXUS3_USERNAME: $NEXUS3_USERNAME"
-        echo "R2DBC_DATABASE_URL: $R2DBC_DATABASE_URL"
+        pwd
+        ls -hal
+        echo "SONAR_TOKEN: $SONAR_TOKEN"
+        echo "LOGGING: $LOGGING"
         echo "::set-output name=status::OK"
