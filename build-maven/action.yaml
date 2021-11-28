@@ -19,103 +19,58 @@ inputs:
     description: Git commit message
     required: false
     default: "Update application version"
-  logging: 
-    description: LOGGING
-    required: false
-    type: string
-    default: "INFO"
-#  github-token: 
-#    description: GITHUB_TOKEN
-#    required: true
-#  sonar-token: 
-#    description: SONAR_TOKEN
-#    required: true
-#  sonar-host-url: 
-#    description: SONAR_HOST_URL
-#    required: true
-#  nexus3-username: 
-#    description: NEXUS3_USERNAME
-#    required: true
-#    type: string
-#  nexus3-password: 
-#    description: NEXUS3_PASSWORD
-#    required: true
-#    type: string
-#  r2dbc-database-url:
-#    description: R2DBC_DATABASE_URL
-#    type: string
-#  r2dbc-database-username:
-#    description: R2DBC_DATABASE_USERNAME
-#    type: string
-#  r2dbc-database-password:
-#    description: R2DBC_DATABASE_USERNAME
-#    type: string
 outputs:
   status:
     description: Status
     value: ${{ steps['finish-build'].outputs.status }}
 runs:
   using: composite
-#  env:
-#    NEXUS3_USERNAME: ${{ inputs['nexus3-username'] }}
-#    NEXUS3_PASSWORD: ${{ inputs['nexus3-password'] }}
-#    R2DBC_DATABASE_URL: ${{ inputs['r2dbc-database-url'] }}
-#    R2DBC_DATABASE_USERNAME: ${{ inputs['r2dbc-database-username'] }}
-#    R2DBC_DATABASE_PASSWORD: ${{ inputs['r2dbc-database-password'] }}
-#    LOGGING: ${{ inputs['logging'] }}  
 
   steps:
-#    - id: set-up-jdk11 
-#      name: Set up JDK 11
-#      uses: actions/setup-java@v2
-#      with:
-#        java-version: '11'
-#        distribution: 'adopt'
-#        cache: maven
+    - id: set-up-jdk11 
+      name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+        cache: maven
         
-#    - id: cache-sonarqube-packages
-#      name: Cache SonarQube packages
-#      uses: actions/cache@v2
-#      with:
-#        path: ~/.sonar/cache
-#        key: ${{ runner.os }}-sonar
-#        restore-keys: ${{ runner.os }}-sonar
+    - id: cache-sonarqube-packages
+      name: Cache SonarQube packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
 
-#    - id: tests
-#      name: Tests
-#      run: mvn -s settings.xml -B test --file pom.xml
+    - id: tests
+      name: Tests
+      run: mvn -s settings.xml -B test --file pom.xml
 
-#    - id: update-version
-#      name: Update version
-#      run: mvn -s settings.xml -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}${{ inputs['snapshot-suffix'] }} versions:commit
+    - id: update-version
+      name: Update version
+      run: mvn -s settings.xml -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}${{ inputs['snapshot-suffix'] }} versions:commit
         
-#    - id: verify-and-analyze
-#      name: Verify and analyze
-#      env:
-#        GITHUB_TOKEN: ${{ inputs['github-token'] }}
-#        SONAR_TOKEN: ${{ inputs['sonar-token'] }}
-#        SONAR_HOST_URL: ${{ inputs['sonar-host-url'] }}
-#      run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -DskipTests --file pom.xml
+    - id: verify-and-analyze
+      name: Verify and analyze
+      run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -DskipTests --file pom.xml
 
-#    - id: build-and-deploy
-#      name: Build and deploy
-#      run: mvn -s settings.xml -B clean package deploy -DskipTests --file pom.xml
+    - id: build-and-deploy
+      name: Build and deploy
+      run: mvn -s settings.xml -B clean package deploy -DskipTests --file pom.xml
 
-#    - id: commit
-#      name: Commit
-#      run: |
-#        git config --local user.email "${{ inputs['git-email'] }}"
-#        git config --local user.name "${{ inputs['git-username'] }}"
-#        git commit -am "${{ inputs['git-commit-message'] }}"
+    - id: commit
+      name: Commit
+      run: |
+        git config --local user.email "${{ inputs['git-email'] }}"
+        git config --local user.name "${{ inputs['git-username'] }}"
+        git commit -am "${{ inputs['git-commit-message'] }}"
 
-#    - id: push
-#      name : Push
-#      uses: ad-m/github-push-action@master
+    - id: push
+      name : Push
+      uses: ad-m/github-push-action@master
 
     - id: finish-build
       name: Finish build
       shell: bash
-      run: |
-        echo "NEXUS3_USERNAME: $NEXUS3_USERNAME"
-        echo "R2DBC_DATABASE_URL: $R2DBC_DATABASE_URL"
-        echo "::set-output name=status::OK"
+      run: echo "::set-output name=status::OK"
