@@ -3,20 +3,20 @@ name: Build and push Docker image
 on:
   workflow_call:
     inputs:
-      imageName:
+      image-name:
         required: true
         type: string
-      imageVersion:
+      image-version:
         required: true
         type: string  
-      dockerContext:
+      docker-context:
         required: false
         type: string  
         default: ""
     secrets:
-      nexusUsername:
+      nexus-username:
         required: true
-      nexusPassword:
+      nexus-password:
         required: true
 
 jobs:
@@ -37,15 +37,15 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: private.nexus.cams7.ml
-          username: ${{ secrets.nexusUsername }}
-          password: ${{ secrets.nexusPassword }}
+          username: ${{ secrets['nexus-username'] }}
+          password: ${{ secrets['nexus-password'] }}
       
       - id: build-push
         name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: ${{ github.workspace }}/${{ inputs.dockerContext }}
+          context: ${{ github.workspace }}/${{ inputs['docker-context'] }}
           push: true
           tags: |
-            private.nexus.cams7.ml/${{ inputs.imageName }}:${{ inputs.imageVersion }} 
-            private.nexus.cams7.ml/${{ inputs.imageName }}:latest
+            private.nexus.cams7.ml/${{ inputs['image-name'] }}:${{ inputs['image-version'] }} 
+            private.nexus.cams7.ml/${{ inputs['image-name'] }}:latest

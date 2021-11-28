@@ -3,28 +3,28 @@ name: Update Docker image on Kustomize file
 on:
   workflow_call:
     inputs:
-      imageName:
+      image-name:
         required: true
         type: string
-      imageVersion:
+      image-version:
         required: true
         type: string
-      kustomizePath:
+      kustomize-path:
         required: false
         type: string  
         default: ""
-      gitEmail:
+      git-email:
         required: false
         type: string  
         default: "action@github.com"
-      gitUsername:
+      git-username:
         required: false
         type: string
         default: "Deploy Action"
-      gitCommitMessage:
+      git-commit-message:
         required: false
         type: string  
-        default: "Change image tag"
+        default: "Update Docker image"
 
 jobs:
   update-kustomize:
@@ -40,15 +40,15 @@ jobs:
       - id: update-kustomize
         name: Update Kustomize
         run: |
-          cd ${{ github.workspace }}/${{ inputs.kustomizePath }}
-          kustomize edit set image public.nexus.cams7.ml/${{ inputs.imageName }}=public.nexus.cams7.ml/${{ inputs.imageName }}:${{ inputs.imageVersion }}
+          cd ${{ github.workspace }}/${{ inputs['kustomize-path'] }}
+          kustomize edit set image public.nexus.cams7.ml/${{ inputs['image-name'] }}=public.nexus.cams7.ml/${{ inputs['image-name'] }}:${{ inputs['image-version'] }}
 
       - id: commit
         name: Commit
         run: |
-          git config --local user.email "${{ inputs.gitEmail }}"
-          git config --local user.name "${{ inputs.gitUsername }}"
-          git commit -am "Change image ${{ inputs.gitCommitMessage }}"
+          git config --local user.email "${{ inputs['git-email'] }}"
+          git config --local user.name "${{ inputs['git-username'] }}"
+          git commit -am "${{ inputs['git-commit-message'] }}"
 
       - id: push
         name : Push

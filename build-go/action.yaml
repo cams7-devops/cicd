@@ -1,24 +1,24 @@
-name: 'Buid Go application'
+name: Buid Go application
 
-description: 'Buid Go application'
+description: Buid Go application
 
 inputs:
   built-file: 
-    description: 'Built file'
+    description: Built file
     required: true
   go-file: 
-    description: 'Go file'
+    description: Go file
     required: true
   go-version: 
-    description: 'Go version'
+    description: Go version
     required: false
     default: "1.17"
 outputs:
   status:
-    description: "Status"
+    description: Status
     value: ${{ steps['build-go'].outputs.status }}
 runs:
-  using: "composite"
+  using: composite
   steps:
     - id: setup-up-go
       name: Set up Go

@@ -1,0 +1,126 @@
+name: Buid Maven application
+
+description: Buid Maven application
+
+inputs:  
+  snapshot-suffix: 
+    description: SNAPSHOT suffix
+    required: false
+    default: "-SNAPSHOT"
+  git-email:
+    required: false
+    type: string  
+    default: "action@github.com"
+  git-username:
+    required: false
+    type: string
+    default: "Deploy Action"
+  git-commit-message:
+    required: false
+    type: string  
+    default: "Update version"
+  logging: 
+    description: LOGGING
+    required: false
+    default: "INFO"
+secrets:
+  github-token: 
+    description: GITHUB_TOKEN
+    required: true
+  sonar-token: 
+    description: SONAR_TOKEN
+    required: true
+  sonar-host-url: 
+    description: SONAR_HOST_URL
+    required: true
+  nexus3-username: 
+    description: NEXUS3_USERNAME
+    required: true
+  nexus3-password: 
+    description: NEXUS3_PASSWORD
+    required: true
+  r2dbc-database-url:
+    description: R2DBC_DATABASE_URL
+  r2dbc-database-username:
+    description: R2DBC_DATABASE_USERNAME
+  r2dbc-database-password:
+    description: R2DBC_DATABASE_USERNAME
+outputs:
+  status:
+    description: Status
+    value: ${{ steps['finish-build'].outputs.status }}
+runs:
+  using: composite
+  env:
+    NEXUS3_USERNAME: ${{ secrets['nexus3-username'] }}
+    NEXUS3_PASSWORD: ${{ secrets['nexus3-password'] }}
+    R2DBC_DATABASE_URL: ${{ secrets['r2dbc-database-url'] }}
+    R2DBC_DATABASE_USERNAME: ${{ secrets['r2dbc-database-username'] }}
+    R2DBC_DATABASE_PASSWORD: ${{ secrets['r2dbc-database-password'] }}
+    LOGGING: ${{ inputs['logging'] }}  
+
+  steps:
+    - id: setup-up-go
+      name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ inputs['go-version'] }}
+
+    - id: build-go
+      name: Build Go
+      shell: bash
+      run: |
+        CGO_ENABLED=0 go build -o ${{ inputs['built-file'] }} ${{ inputs['go-file'] }}
+        echo "::set-output name=status::built-file"
+
+        - id: set-up-jdk11 
+      name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+        cache: maven
+        
+    - id: cache-sonarqube-packages
+      name: Cache SonarQube packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+
+    - id: tests
+      name: Tests
+      run: mvn -s settings.xml -B test --file pom.xml
+
+    - id: update-version
+      name: Update version
+      run: mvn -s settings.xml -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}${{ inputs['snapshot-suffix'] }} versions:commit
+        
+    - id: verify-and-analyze
+      name: Verify and analyze
+      env:
+        GITHUB_TOKEN: ${{ secrets['github-token'] }}
+        SONAR_TOKEN: ${{ secrets['sonar-token'] }}
+        SONAR_HOST_URL: ${{ secrets['sonar-host-url'] }}
+      run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -DskipTests --file pom.xml
+
+    - id: build-and-deploy
+      name: Build and deploy
+      run: mvn -s settings.xml -B clean package deploy -DskipTests --file pom.xml
+
+    - id: commit
+      name: Commit
+      run: |
+        git config --local user.email "${{ inputs['git-email'] }}"
+        git config --local user.name "${{ inputs['git-username'] }}"
+        git commit -am "${{ inputs['git-commit-message'] }}"
+
+    - id: push
+      name : Push
+      uses: ad-m/github-push-action@master
+
+    - id: finish-build
+      name: Finish build
+      shell: bash
+      run: echo "::set-output name=status::OK"
