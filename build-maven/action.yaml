@@ -6,22 +6,27 @@ inputs:
   snapshot-suffix: 
     description: SNAPSHOT suffix
     required: false
+    type: string
     default: "-SNAPSHOT"
   git-email:
+    description: Git email
     required: false
     type: string  
     default: "action@github.com"
   git-username:
+    description: Git username
     required: false
     type: string
     default: "Deploy Action"
   git-commit-message:
+    description: Git commit message
     required: false
     type: string  
-    default: "Update version"
+    default: "Update application version"
   logging: 
     description: LOGGING
     required: false
+    type: string
     default: "INFO"
 secrets:
   github-token: 
