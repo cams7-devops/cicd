@@ -73,7 +73,6 @@ runs:
 
     - id: push
       name : Push
-      shell: bash
       uses: ad-m/github-push-action@master
 
     - id: finish-build
