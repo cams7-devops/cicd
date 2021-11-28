@@ -43,9 +43,9 @@ runs:
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
 
-#    - id: tests
-#      name: Tests
-#      run: mvn -s settings.xml -B test --file pom.xml
+    - id: tests
+      name: Tests
+      run: mvn -s settings.xml -B test --file pom.xml
 
 #    - id: update-version
 #      name: Update version
